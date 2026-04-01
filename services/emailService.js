@@ -7,7 +7,8 @@ const createTransporter = () => {
     secure: false,
     auth: {
       user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
+      // Gmail app passwords often include spaces; remove them to avoid auth failures
+      pass: (process.env.SMTP_PASS || '').replace(/\s+/g, '')
     },
     tls: {
       rejectUnauthorized: false
