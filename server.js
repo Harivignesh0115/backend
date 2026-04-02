@@ -45,9 +45,9 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 // ─────────────────────────────────────────────
 // API ROUTES
 // ─────────────────────────────────────────────
-// Block API calls when DB is disconnected (except health check)
+// Block API calls when DB is disconnected (except health check and auth)
 app.use('/api', (req, res, next) => {
-  if (req.path === '/health') return next();
+  if (req.path === '/health' || req.path.startsWith('/auth/')) return next();
   if (mongoose.connection.readyState !== 1) {
     return res.status(503).json({
       success: false,

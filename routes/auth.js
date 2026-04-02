@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 const Admin = require('../models/Admin');
 const { authenticateAdmin, authenticateReception } = require('../middleware/auth');
@@ -23,6 +24,30 @@ router.post('/login', loginLimiter, async (req, res) => {
         success: false,
         message: 'Email and password are required.'
       });
+    }
+
+    // Demo fallback when DB is not connected
+    if (mongoose.connection.readyState !== 1) {
+      const defaultEmail = process.env.ADMIN_EMAIL || 'admin@mittelmind.com';
+      const defaultPassword = process.env.ADMIN_PASSWORD || 'MittelAdmin@2024';
+      
+      if (email.toLowerCase().trim() === defaultEmail && password === defaultPassword) {
+        return res.json({
+          success: true,
+          message: 'Demo login successful (DB not connected)',
+          token: 'demo_token_' + Date.now(),
+          admin: {
+            name: 'Dr. E. Lloyds',
+            email: defaultEmail,
+            role: 'admin'
+          }
+        });
+      } else {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials. Demo credentials: admin@mittelmind.com / MittelAdmin@2024'
+        });
+      }
     }
 
     // Find admin by email

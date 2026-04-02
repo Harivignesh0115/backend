@@ -8,5 +8,8 @@ CREATE TABLE appointments (
   concern TEXT,
   date TEXT,
   time TEXT,
-  status TEXT DEFAULT 'booked'
+  status TEXT DEFAULT 'booked',
+  appointmentDateTime TEXT,
+  createdAt TEXT DEFAULT (datetime('now')),
+  updatedAt TEXT DEFAULT (datetime('now'))
 );
